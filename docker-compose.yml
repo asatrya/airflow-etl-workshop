@@ -26,36 +26,5 @@ services:
         ports:
             - "8080:8080"
 
-    data_source:
-        image: minio/minio:RELEASE.2019-10-12T01-39-57Z
-        volumes:
-            - ./data-source/data:/data
-        ports:
-            - "9001:9000"
-        environment:
-            MINIO_ACCESS_KEY: minio
-            MINIO_SECRET_KEY: minio123
-        command: server /data
-
-    data_lake:
-        image: minio/minio:RELEASE.2019-10-12T01-39-57Z
-        volumes:
-            - vol-data-lake:/data
-        ports:
-            - "9002:9000"
-        environment:
-            MINIO_ACCESS_KEY: minio
-            MINIO_SECRET_KEY: minio123
-        command: server /data
-
-    data_warehouse:
-        image: mysql:5.6
-        env_file:
-            - .env
-        volumes: 
-            - ./data-warehouse/sql:/docker-entrypoint-initdb.d
-        ports:
-            - "3306:3306"
-
 volumes: 
     vol-data-lake:

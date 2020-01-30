@@ -26,6 +26,13 @@ airflow variables --set DATALAKE_MINIO_RAW_BUCKET $DATALAKE_MINIO_RAW_BUCKET
 airflow variables --set DATALAKE_MINIO_CLEANED_BUCKET $DATALAKE_MINIO_CLEANED_BUCKET
 airflow variables --set DATALAKE_MINIO_AGG_BUCKET $DATALAKE_MINIO_AGG_BUCKET
 
+airflow variables --set DW_MYSQL_HOST $DW_MYSQL_HOST
+airflow variables --set DW_MYSQL_PORT $DW_MYSQL_PORT
+airflow variables --set DW_MYSQL_USER $DW_MYSQL_USER
+airflow variables --set DW_MYSQL_PASSWORD $DW_MYSQL_PASSWORD
+airflow variables --set DW_MYSQL_ROOT_PASSWORD $DW_MYSQL_ROOT_PASSWORD
+airflow variables --set DW_MYSQL_DATABASE $DW_MYSQL_DATABASE
+
 # start the scheduler and webserver
 printf "Running scheduler and webserver...\n\n"
 /usr/bin/supervisord

@@ -2,6 +2,7 @@ version: "2.1"
 services:
     airflow_db:
         image: postgres:10.11
+        container_name: airflow_db
         env_file:
             - .env
         ports:
@@ -9,7 +10,8 @@ services:
 
     airflow_web:
         build: ./airflow-pipeline
-        image: asatrya/docker-airflow:1.10.6
+        container_name: airflow_web
+        image: asatrya/docker-airflow:1.10.9
         restart: always
         depends_on:
             - airflow_db
@@ -20,7 +22,7 @@ services:
         volumes:
             - ./airflow-pipeline/dags:/usr/local/airflow/dags
             # Uncomment to override airflow.cfgs
-            # - ./airflow-pipeline/airflow.cfg:/usr/local/airflow/airflow.cfg
+            - ./airflow-pipeline/airflow.cfg:/usr/local/airflow/airflow.cfg
             # Uncomment to include custom plugins
             # - ./plugins:/usr/local/airflow/plugins
         ports:

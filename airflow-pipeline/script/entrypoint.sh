@@ -14,17 +14,12 @@ airflow initdb
 
 # set airflow variables
 printf "Setting airflow variables...\n\n"
-airflow variables --set SOURCE_MINIO_ENDPOINT $SOURCE_MINIO_ENDPOINT
-airflow variables --set SOURCE_MINIO_ACCESS_KEY $SOURCE_MINIO_ACCESS_KEY
-airflow variables --set SOURCE_MINIO_SECRET_KEY $SOURCE_MINIO_SECRET_KEY
-airflow variables --set SOURCE_MINIO_BUCKET $SOURCE_MINIO_BUCKET
-
-airflow variables --set DATALAKE_MINIO_ENDPOINT $DATALAKE_MINIO_ENDPOINT
-airflow variables --set DATALAKE_MINIO_ACCESS_KEY $DATALAKE_MINIO_ACCESS_KEY
-airflow variables --set DATALAKE_MINIO_SECRET_KEY $DATALAKE_MINIO_SECRET_KEY
-airflow variables --set DATALAKE_MINIO_RAW_BUCKET $DATALAKE_MINIO_RAW_BUCKET
-airflow variables --set DATALAKE_MINIO_CLEANED_BUCKET $DATALAKE_MINIO_CLEANED_BUCKET
-airflow variables --set DATALAKE_MINIO_AGG_BUCKET $DATALAKE_MINIO_AGG_BUCKET
+airflow variables --set SOURCE_MYSQL_HOST $SOURCE_MYSQL_HOST
+airflow variables --set SOURCE_MYSQL_PORT $SOURCE_MYSQL_PORT
+airflow variables --set SOURCE_MYSQL_USER $SOURCE_MYSQL_USER
+airflow variables --set SOURCE_MYSQL_PASSWORD $SOURCE_MYSQL_PASSWORD
+airflow variables --set SOURCE_MYSQL_ROOT_PASSWORD $SOURCE_MYSQL_ROOT_PASSWORD
+airflow variables --set SOURCE_MYSQL_DATABASE $SOURCE_MYSQL_DATABASE
 
 airflow variables --set DW_MYSQL_HOST $DW_MYSQL_HOST
 airflow variables --set DW_MYSQL_PORT $DW_MYSQL_PORT

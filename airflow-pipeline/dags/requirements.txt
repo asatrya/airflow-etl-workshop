@@ -1,5 +1,5 @@
 # apache-airflow[postgres,gcp]==1.10.6
-psycopg2
+# psycopg2
 sqlalchemy
 minio
 pandas

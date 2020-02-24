@@ -185,46 +185,45 @@ def run_job(**kwargs):
     # If no records fetched, then exit
     if store_df.shape[0] == 0:
         logging.info('No new record in source table')
-        exit()
+    else:
+        # Extract lookup table `address`
+        address_df = lookup_table_address(store_df, db_engine)
 
-    # Extract lookup table `address`
-    address_df = lookup_table_address(store_df, db_engine)
+        # Extract lookup table `city`
+        city_df = lookup_table_city(address_df, db_engine)
 
-    # Extract lookup table `city`
-    city_df = lookup_table_city(address_df, db_engine)
+        # Extract lookup table `country`
+        country_df = lookup_table_country(city_df, db_engine)
 
-    # Extract lookup table `country`
-    country_df = lookup_table_country(city_df, db_engine)
+        # Extract lookup table `staff`
+        staff_df = lookup_table_staff(store_df, db_engine)
 
-    # Extract lookup table `staff`
-    staff_df = lookup_table_staff(store_df, db_engine)
+        ############################################
+        # TRANSFORM
+        ############################################
 
-    ############################################
-    # TRANSFORM
-    ############################################
+        # Join table `store` with `address`
+        dim_store_df = join_store_address(store_df, address_df)
 
-    # Join table `store` with `address`
-    dim_store_df = join_store_address(store_df, address_df)
+        # Join table `store` with `city`
+        dim_store_df = join_store_city(dim_store_df, city_df)
 
-    # Join table `store` with `city`
-    dim_store_df = join_store_city(dim_store_df, city_df)
+        # Join table `store` with `country`
+        dim_store_df = join_store_country(dim_store_df, country_df)
 
-    # Join table `store` with `country`
-    dim_store_df = join_store_country(dim_store_df, country_df)
+        # Join table `store` with `manager_staff`
+        dim_store_df = join_store_manager_staff(dim_store_df, staff_df)
 
-    # Join table `store` with `manager_staff`
-    dim_store_df = join_store_manager_staff(dim_store_df, staff_df)
+        # Add start_date column
+        dim_store_df['start_date'] = '1970-01-01'
 
-    # Add start_date column
-    dim_store_df['start_date'] = '1970-01-01'
+        # Validate result
+        dim_store_df = validate(store_df, dim_store_df)
+        logging.info('dim_store_df=\n{}'.format(dim_store_df.dtypes))
 
-    # Validate result
-    dim_store_df = validate(store_df, dim_store_df)
-    logging.info('dim_store_df=\n{}'.format(dim_store_df.dtypes))
+        ############################################
+        # LOAD
+        ############################################
 
-    ############################################
-    # LOAD
-    ############################################
-
-    # Load dimension table `dimStore`
-    load_dim_store(dim_store_df)
+        # Load dimension table `dimStore`
+        load_dim_store(dim_store_df)

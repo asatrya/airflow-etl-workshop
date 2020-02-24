@@ -162,40 +162,39 @@ def run_job(**kwargs):
     # If no records fetched, then exit
     if customer_df.shape[0] == 0:
         logging.info('No new record in source table')
-        exit()
+    else:
+        # Extract lookup table `address`
+        address_df = lookup_table_address(customer_df, db_engine)
 
-    # Extract lookup table `address`
-    address_df = lookup_table_address(customer_df, db_engine)
+        # Extract lookup table `city`
+        city_df = lookup_table_city(address_df, db_engine)
 
-    # Extract lookup table `city`
-    city_df = lookup_table_city(address_df, db_engine)
+        # Extract lookup table `country`
+        country_df = lookup_table_country(city_df, db_engine)
 
-    # Extract lookup table `country`
-    country_df = lookup_table_country(city_df, db_engine)
+        ############################################
+        # TRANSFORM
+        ############################################
 
-    ############################################
-    # TRANSFORM
-    ############################################
+        # Join table `customer` with `address`
+        dim_customer_df = join_customer_address(customer_df, address_df)
 
-    # Join table `customer` with `address`
-    dim_customer_df = join_customer_address(customer_df, address_df)
+        # Join table `customer` with `city`
+        dim_customer_df = join_customer_city(dim_customer_df, city_df)
 
-    # Join table `customer` with `city`
-    dim_customer_df = join_customer_city(dim_customer_df, city_df)
+        # Join table `customer` with `country`
+        dim_customer_df = join_customer_country(dim_customer_df, country_df)
 
-    # Join table `customer` with `country`
-    dim_customer_df = join_customer_country(dim_customer_df, country_df)
+        # Add start_date column
+        dim_customer_df['start_date'] = '1970-01-01'
 
-    # Add start_date column
-    dim_customer_df['start_date'] = '1970-01-01'
+        # Validate result
+        dim_customer_df = validate(customer_df, dim_customer_df)
+        logging.info('dim_customer_df=\n{}'.format(dim_customer_df.dtypes))
 
-    # Validate result
-    dim_customer_df = validate(customer_df, dim_customer_df)
-    logging.info('dim_customer_df=\n{}'.format(dim_customer_df.dtypes))
+        ############################################
+        # LOAD
+        ############################################
 
-    ############################################
-    # LOAD
-    ############################################
-
-    # Load dimension table `dimCustomer`
-    load_dim_store(dim_customer_df)
+        # Load dimension table `dimCustomer`
+        load_dim_store(dim_customer_df)

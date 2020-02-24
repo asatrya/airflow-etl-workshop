@@ -120,25 +120,24 @@ def run_job(**kwargs):
     # If no records fetched, then exit
     if film_df.shape[0] == 0:
         logging.info('No new record in source table')
-        exit()
+    else:
+        # Extract lookup table `language`
+        language_df = lookup_table_language(film_df, db_engine)
 
-    # Extract lookup table `language`
-    language_df = lookup_table_language(film_df, db_engine)
+        ############################################
+        # TRANSFORM
+        ############################################
 
-    ############################################
-    # TRANSFORM
-    ############################################
+        # Join table `film` with `language`
+        dim_movie_df = join_film_language(film_df, language_df)
 
-    # Join table `film` with `language`
-    dim_movie_df = join_film_language(film_df, language_df)
+        # Validate result
+        dim_movie_df = validate(film_df, dim_movie_df)
+        logging.info(dim_movie_df)
 
-    # Validate result
-    dim_movie_df = validate(film_df, dim_movie_df)
-    logging.info(dim_movie_df)
+        ############################################
+        # LOAD
+        ############################################
 
-    ############################################
-    # LOAD
-    ############################################
-
-    # Load dimension table `dimMovie`
-    load_dim_movie(dim_movie_df)
+        # Load dimension table `dimMovie`
+        load_dim_movie(dim_movie_df)

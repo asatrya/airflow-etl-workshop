@@ -233,62 +233,61 @@ def run_job(**kwargs):
     # If no records fetched, then exit
     if payment_df.shape[0] == 0:
         logging.info('No new record in source table')
-        exit()
+    else:
+        # Extract lookup table `dimCustomer`
+        dimCustomer_df = lookup_dim_customer(payment_df, dw_engine)
 
-    # Extract lookup table `dimCustomer`
-    dimCustomer_df = lookup_dim_customer(payment_df, dw_engine)
+        # Extract lookup table `rental`
+        rental_df = lookup_table_rental(payment_df, db_engine)
 
-    # Extract lookup table `rental`
-    rental_df = lookup_table_rental(payment_df, db_engine)
+        # Extract lookup table `inventory`
+        inventory_df = lookup_table_inventory(rental_df, db_engine)
 
-    # Extract lookup table `inventory`
-    inventory_df = lookup_table_inventory(rental_df, db_engine)
+        # Extract lookup table `dimMovie`
+        dimMovie_df = lookup_dim_movie(inventory_df, dw_engine)
 
-    # Extract lookup table `dimMovie`
-    dimMovie_df = lookup_dim_movie(inventory_df, dw_engine)
+        # Extract lookup table `dimStore`
+        dimStore_df = lookup_dim_store(inventory_df, dw_engine)
 
-    # Extract lookup table `dimStore`
-    dimStore_df = lookup_dim_store(inventory_df, dw_engine)
+        ############################################
+        # TRANSFORM
+        ############################################
 
-    ############################################
-    # TRANSFORM
-    ############################################
+        # Join table `payment` with `dimCustomer`
+        dim_payment_df = join_payment_dimCustomer(payment_df, dimCustomer_df)
+        logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
 
-    # Join table `payment` with `dimCustomer`
-    dim_payment_df = join_payment_dimCustomer(payment_df, dimCustomer_df)
-    logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
+        # Join table `payment` with `rental`
+        dim_payment_df = join_payment_rental(dim_payment_df, rental_df)
+        logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
 
-    # Join table `payment` with `rental`
-    dim_payment_df = join_payment_rental(dim_payment_df, rental_df)
-    logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
+        # Join table `payment` with `inventory`
+        dim_payment_df = join_payment_inventory(dim_payment_df, inventory_df)
+        logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
 
-    # Join table `payment` with `inventory`
-    dim_payment_df = join_payment_inventory(dim_payment_df, inventory_df)
-    logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
+        # Join table `payment` with `dimMovie`
+        dim_payment_df = join_payment_dimMovie(dim_payment_df, dimMovie_df)
+        logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
 
-    # Join table `payment` with `dimMovie`
-    dim_payment_df = join_payment_dimMovie(dim_payment_df, dimMovie_df)
-    logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
+        # Join table `payment` with `dimStore`
+        dim_payment_df = join_payment_dimStore(dim_payment_df, dimStore_df)
+        logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
 
-    # Join table `payment` with `dimStore`
-    dim_payment_df = join_payment_dimStore(dim_payment_df, dimStore_df)
-    logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
+        # Add date_key smart key
+        dim_payment_df = add_date_key(dim_payment_df)
+        logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
 
-    # Add date_key smart key
-    dim_payment_df = add_date_key(dim_payment_df)
-    logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
+        # Rename and remove columns
+        dim_payment_df = rename_remove_columns(dim_payment_df)
+        logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
 
-    # Rename and remove columns
-    dim_payment_df = rename_remove_columns(dim_payment_df)
-    logging.info('dim_payment_df=\n{}'.format(dim_payment_df))
+        # Validate result
+        dim_payment_df = validate(payment_df, dim_payment_df)
+        logging.info('dim_payment_df=\n{}'.format(dim_payment_df.dtypes))
 
-    # Validate result
-    dim_payment_df = validate(payment_df, dim_payment_df)
-    logging.info('dim_payment_df=\n{}'.format(dim_payment_df.dtypes))
+        # ############################################
+        # # LOAD
+        # ############################################
 
-    # ############################################
-    # # LOAD
-    # ############################################
-
-    # Load dimension table `factSales`
-    load_dim_payment(dim_payment_df)
+        # Load dimension table `factSales`
+        load_dim_payment(dim_payment_df)

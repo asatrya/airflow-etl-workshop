@@ -14,8 +14,7 @@ CREATE TABLE dimDate
 
 CREATE TABLE dimCustomer
 (
-    customer_key int NOT NULL AUTO_INCREMENT,
-    customer_id smallint(5) unsigned NOT NULL,
+    customer_key int unsigned NOT NULL,
     first_name varchar(45) NOT NULL,
     last_name varchar(45) NOT NULL,
     email varchar(50),
@@ -28,15 +27,12 @@ CREATE TABLE dimCustomer
     phone varchar(20),
     active tinyint(1) NOT NULL,
     create_date datetime NOT NULL,
-    start_date date NOT NULL,
-    end_date date,
     PRIMARY KEY(customer_key)
 );
 
 CREATE TABLE dimMovie
 (
-    movie_key int NOT NULL AUTO_INCREMENT,
-    film_id smallint(5) unsigned NOT NULL,
+    movie_key int unsigned NOT NULL,
     title varchar(255) NOT NULL,
     description text,
     release_year year(4),
@@ -51,8 +47,7 @@ CREATE TABLE dimMovie
 
 CREATE TABLE dimStore
 (
-    store_key int NOT NULL AUTO_INCREMENT,
-    store_id smallint(5) unsigned NOT NULL,
+    store_key int unsigned NOT NULL,
     address varchar(50) NOT NULL,
     address2 varchar(50),
     district varchar(20) NOT NULL,
@@ -61,18 +56,16 @@ CREATE TABLE dimStore
     postal_code varchar(10),
     manager_first_name varchar(45) NOT NULL,
     manager_last_name varchar(45) NOT NULL,
-    start_date date NOT NULL,
-    end_date date,
     PRIMARY KEY (store_key)
 );
 
 CREATE TABLE factSales
 (
-    sales_key INT NOT NULL AUTO_INCREMENT,
+    sales_key INT unsigned NOT NULL,
     date_key INT NOT NULL,
-    customer_key INT NOT NULL,
-    movie_key INT,
-    store_key INT,
+    customer_key INT unsigned NOT NULL,
+    movie_key INT unsigned,
+    store_key INT unsigned,
     sales_amount decimal(5,2) NOT NULL,
     FOREIGN KEY fk_date (date_key) REFERENCES dimDate(date_key),
     FOREIGN KEY fk_customer (customer_key) REFERENCES dimCustomer(customer_key),

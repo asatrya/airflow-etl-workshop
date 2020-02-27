@@ -38,11 +38,11 @@ dw_engine = db.create_engine(dw_conn_url)
 
 
 def get_dimMovie_last_id(db_engine):
-    """Function to get last film_id from dimemsion table `dimMovie`"""
+    """Function to get last movie_key from dimemsion table `dimMovie`"""
 
-    query = "SELECT max(film_id) AS last_film_id FROM dimMovie"
+    query = "SELECT max(movie_key) AS last_movie_key FROM dimMovie"
     tdf = pd.read_sql(query, db_engine)
-    return tdf.iloc[0]['last_film_id']
+    return tdf.iloc[0]['last_movie_key']
 
 
 def extract_table_film(last_id, db_engine):
@@ -97,6 +97,7 @@ def validate(source_df, destination_df):
 def load_dim_movie(destination_df):
     """Load to data warehouse"""
 
+    destination_df = destination_df.rename({'film_id': 'movie_key'}, axis=1)
     destination_df.to_sql('dimMovie', dw_engine,
                           if_exists='append', index=False)
 

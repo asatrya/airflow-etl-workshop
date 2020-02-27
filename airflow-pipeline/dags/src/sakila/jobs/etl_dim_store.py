@@ -38,9 +38,9 @@ dw_engine = db.create_engine(dw_conn_url)
 
 
 def get_dimStore_last_id(db_engine):
-    """Function to get last store_id from dimemsion table `dimStore`"""
+    """Function to get last store_key from dimemsion table `dimStore`"""
 
-    query = "SELECT max(store_id) AS last_id FROM dimStore"
+    query = "SELECT max(store_key) AS last_id FROM dimStore"
     tdf = pd.read_sql(query, db_engine)
     return tdf.iloc[0]['last_id']
 
@@ -162,6 +162,7 @@ def validate(source_df, destination_df):
 def load_dim_store(destination_df):
     """Load to data warehouse"""
 
+    destination_df = destination_df.rename({'store_id': 'store_key'}, axis=1)
     destination_df.to_sql('dimStore', dw_engine,
                           if_exists='append', index=False)
 
@@ -213,9 +214,6 @@ def run_job(**kwargs):
 
         # Join table `store` with `manager_staff`
         dim_store_df = join_store_manager_staff(dim_store_df, staff_df)
-
-        # Add start_date column
-        dim_store_df['start_date'] = '1970-01-01'
 
         # Validate result
         dim_store_df = validate(store_df, dim_store_df)

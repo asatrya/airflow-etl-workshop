@@ -38,9 +38,9 @@ dw_engine = db.create_engine(dw_conn_url)
 
 
 def get_dimCustomer_last_id(db_engine):
-    """Function to get last customer_id from dimemsion table `dimCustomer`"""
+    """Function to get last customer_key from dimemsion table `dimCustomer`"""
 
-    query = "SELECT max(customer_id) AS last_id FROM dimCustomer"
+    query = "SELECT max(customer_key) AS last_id FROM dimCustomer"
     tdf = pd.read_sql(query, db_engine)
     return tdf.iloc[0]['last_id']
 
@@ -139,6 +139,7 @@ def validate(source_df, destination_df):
 def load_dim_store(destination_df):
     """Load to data warehouse"""
 
+    destination_df = destination_df.rename({'customer_id': 'customer_key'}, axis=1)
     destination_df.to_sql('dimCustomer', dw_engine,
                           if_exists='append', index=False)
 
@@ -152,7 +153,7 @@ def run_job(**kwargs):
     # EXTRACT
     ############################################
 
-    # Get last customer_id from dimCustomer data warehouse
+    # Get last customer_key from dimCustomer data warehouse
     last_id = get_dimCustomer_last_id(dw_engine)
     logging.info('last_id={}'.format(last_id))
 
@@ -184,9 +185,6 @@ def run_job(**kwargs):
 
         # Join table `customer` with `country`
         dim_customer_df = join_customer_country(dim_customer_df, country_df)
-
-        # Add start_date column
-        dim_customer_df['start_date'] = '1970-01-01'
 
         # Validate result
         dim_customer_df = validate(customer_df, dim_customer_df)

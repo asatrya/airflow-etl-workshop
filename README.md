@@ -12,15 +12,27 @@ This workshop assumes that:
 
    If that is not the case, you have to import schema and data for your source (OLTP) database by executing SQL queries in `sql/source_database/sakila_db_schema.sql` and `sql/source_database/sakila_db_data.sql`.
 
-1) You have already finished previous tutorial at https://github.com/asatrya/ETL-DataWarehouse-Workshop. 
+1) You have an empty schema for data warehouse set up for you. 
 
    If that is not the case, you have to setup table schema for your data warehouse (OLAP) by executing SQL queries in `sql/datawarehouse/sakila_dw_schema.sql`.
 
+1) These tools are installed
+   * Docker
+   * Docker Compose
+
 ## How to Run
 
-1) Prerequisite
-   * Docker installed
-   * Docker Compose installed
+1) Clone this repository
+   
+   ```bash
+   git clone https://github.com/asatrya/airflow-etl-workshop
+   ```
+
+   and go into project directory
+
+   ```bash
+   cd airflow-etl-workshop
+   ```
 
 1) Configure `.env`
 
